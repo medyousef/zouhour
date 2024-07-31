@@ -1,0 +1,179 @@
+import RPi.GPIO as GPIO
+import time
+from lcd_display import *
+from button_handler import *
+from export import *
+
+def main():
+    # Main program block
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbers
+    setup_buttons()
+    lcd_init()
+
+    production_start_time = None
+    production_end_time = None
+    production_active = False
+    production_button_pressed = False
+
+    pause_start_time = None
+    pause_end_time = None
+    pause_active = False
+    pause_button_pressed = False
+
+    panne_start_time = None
+    panne_end_time = None
+    panne_active = False
+    panne_button_pressed = False
+
+    changement_start_time = None
+    changement_end_time = None
+    changement_active = False
+    changement_button_pressed = False
+
+    reglage_start_time = None
+    reglage_end_time = None
+    reglage_active = False
+    reglage_button_pressed = False
+
+    organisation_start_time = None
+    organisation_end_time = None
+    organisation_active = False
+    organisation_button_pressed = False
+
+    # Initialize time variables
+    elapsed_time_production = 0
+    elapsed_time_pause = 0
+    elapsed_time_panne = 0
+    elapsed_time_reglage = 0
+    elapsed_time_organisation = 0
+    elapsed_time_changement = 0
+    total_pause_time_during_panne = 0
+
+    while True:
+        # Display initial messages
+        lcd_string("Labo ARRAZI", LCD_LINE_1)
+
+        # Handle buttons
+        production_button_pressed, production_active, production_start_time, production_end_time = handle_button(
+            5, production_button_pressed, production_active, production_start_time, production_end_time)
+
+        pause_button_pressed, pause_active, pause_start_time, pause_end_time = handle_button(
+            17, pause_button_pressed, pause_active, pause_start_time, pause_end_time)
+
+        panne_button_pressed, panne_active, panne_start_time, panne_end_time = handle_button(
+            27, panne_button_pressed, panne_active, panne_start_time, panne_end_time)
+
+        reglage_button_pressed, reglage_active, reglage_start_time, reglage_end_time = handle_button(
+            6, reglage_button_pressed, reglage_active, reglage_start_time, reglage_end_time)
+
+        organisation_button_pressed, organisation_active, organisation_start_time, organisation_end_time = handle_button(
+            13, organisation_button_pressed, organisation_active, organisation_start_time, organisation_end_time)
+
+        changement_button_pressed, changement_active, changement_start_time, changement_end_time = handle_button(
+            22, changement_button_pressed, changement_active, changement_start_time, changement_end_time)
+
+        # Display production time on line 2
+        if production_active:
+            current_time = int(time.time() - production_start_time)
+            minutes = current_time // 60
+            seconds = current_time % 60
+            lcd_string(f"Production: {minutes:02d}:{seconds:02d}", LCD_LINE_2)
+        else:
+            if production_end_time is not None:
+                elapsed_time_production += int(production_end_time - production_start_time)
+                if production_button_pressed:
+                    save_to_db(elapsed_time_production, elapsed_time_pause, elapsed_time_panne, elapsed_time_reglage, elapsed_time_organisation, elapsed_time_changement)
+                else:
+                    elapsed_time_pause = 0
+                    elapsed_time_panne = 0
+                    elapsed_time_reglage = 0
+                    elapsed_time_organisation = 0
+                    elapsed_time_changement = 0
+                minutes = elapsed_time_production // 60
+                seconds = elapsed_time_production % 60
+                lcd_string(f"Total Production: {minutes:02d}:{seconds:02d}", LCD_LINE_2)
+            production_button_pressed = not production_button_pressed  # Toggle the button pressed state
+
+        # Display pause time on line 4
+        if pause_active:
+            current_time = int(time.time() - pause_start_time)
+            minutes = current_time // 60
+            seconds = current_time % 60
+            lcd_string(f"Pause: {minutes:02d}:{seconds:02d}", LCD_LINE_4)
+        else:
+            if pause_end_time is not None:
+                elapsed_time_pause += int(pause_end_time - pause_start_time)
+                pause_end_time = None  # Reset end time after accumulation
+            minutes = elapsed_time_pause // 60
+            seconds = elapsed_time_pause % 60
+            lcd_string(f"Total Pause: {minutes:02d}:{seconds:02d}", LCD_LINE_4)
+
+        # Display panne time on line 3
+        if panne_active:
+            current_time = int(time.time() - panne_start_time - total_pause_time_during_panne)
+            minutes = current_time // 60
+            seconds = current_time % 60
+            lcd_string(f"Panne: {minutes:02d}:{seconds:02d}", LCD_LINE_3)
+        else:
+            if panne_end_time is not None:
+                elapsed_time_panne += int(panne_end_time - panne_start_time - total_pause_time_during_panne)
+                panne_end_time = None  # Reset end time after accumulation
+            minutes = elapsed_time_panne // 60
+            seconds = elapsed_time_panne % 60
+            lcd_string(f"Total Panne: {minutes:02d}:{seconds:02d}", LCD_LINE_3)
+
+        # Display reglage time on line 3
+        if reglage_active:
+            current_time = int(time.time() - reglage_start_time)
+            minutes = current_time // 60
+            seconds = current_time % 60
+            lcd_string(f"Reglage: {minutes:02d}:{seconds:02d}", LCD_LINE_3)
+        else:
+            if reglage_end_time is not None:
+                elapsed_time_reglage += int(reglage_end_time - reglage_start_time)
+                reglage_end_time = None  # Reset end time after accumulation
+            minutes = elapsed_time_reglage // 60
+            seconds = elapsed_time_reglage % 60
+            lcd_string(f"Total Reglage: {minutes:02d}:{seconds:02d}", LCD_LINE_3)
+
+        # Display organisation time on line 3
+        if organisation_active:
+            current_time = int(time.time() - organisation_start_time)
+            minutes = current_time // 60
+            seconds = current_time % 60
+            lcd_string(f"Organisation: {minutes:02d}:{seconds:02d}", LCD_LINE_3)
+        else:
+            if organisation_end_time is not None:
+                elapsed_time_organisation += int(organisation_end_time - organisation_start_time)
+                organisation_end_time = None  # Reset end time after accumulation
+            minutes = elapsed_time_organisation // 60
+            seconds = elapsed_time_organisation % 60
+            lcd_string(f"Total Organisation: {minutes:02d}:{seconds:02d}", LCD_LINE_3)
+
+        # Display changement time on line 3
+        if changement_active:
+            current_time = int(time.time() - changement_start_time)
+            minutes = current_time // 60
+            seconds = current_time % 60
+            lcd_string(f"Changement: {minutes:02d}:{seconds:02d}", LCD_LINE_3)
+        else:
+            if changement_end_time is not None:
+                elapsed_time_changement += int(changement_end_time - changement_start_time)
+                changement_end_time = None  # Reset end time after accumulation
+            minutes = elapsed_time_changement // 60
+            seconds = elapsed_time_changement % 60
+            lcd_string(f"Total Changement: {minutes:02d}:{seconds:02d}", LCD_LINE_3)
+
+        time.sleep(0.1)
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        from lcd_display import lcd_byte, LCD_CMD, LCD_LINE_1
+        lcd_byte(0x01, LCD_CMD)
+        lcd_string("Goodbye!", LCD_LINE_1)
+        GPIO.cleanup()
