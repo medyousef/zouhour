@@ -55,23 +55,94 @@ def main():
         lcd_string("Labo ARRAZI", LCD_LINE_1)
 
         # Handle buttons
-        production_button_pressed, production_active, production_start_time, production_end_time = handle_button(
-            5, production_button_pressed, production_active, production_start_time, production_end_time)
+        # Check if pause button is pressed
+        if GPIO.input(BUTTON_PAUSE_PIN) == GPIO.LOW and not pause_button_pressed:
+            pause_button_pressed = True
+            if not pause_active:
+                pause_start_time = time.time()
+                pause_active = True
+            else:
+                pause_end_time = time.time()
+                pause_active = False
+                # Accumulate pause time if panne is active
+                if panne_active:
+                    total_pause_time_during_panne += pause_end_time - pause_start_time
+            time.sleep(0.2)  # Debounce delay
 
-        pause_button_pressed, pause_active, pause_start_time, pause_end_time = handle_button(
-            17, pause_button_pressed, pause_active, pause_start_time, pause_end_time)
+        if GPIO.input(BUTTON_PAUSE_PIN) == GPIO.HIGH:
+            pause_button_pressed = False
 
-        panne_button_pressed, panne_active, panne_start_time, panne_end_time = handle_button(
-            27, panne_button_pressed, panne_active, panne_start_time, panne_end_time)
+        # Check if panne button is pressed
+        if GPIO.input(BUTTON_PANNE_PIN) == GPIO.LOW and not panne_button_pressed:
+            panne_button_pressed = True
+            if not panne_active:
+                panne_start_time = time.time()
+                panne_active = True
+                total_pause_time_during_panne = 0  # Reset total pause time during panne
+            else:
+                panne_end_time = time.time()
+                panne_active = False
+            time.sleep(0.2)  # Debounce delay
 
-        reglage_button_pressed, reglage_active, reglage_start_time, reglage_end_time = handle_button(
-            6, reglage_button_pressed, reglage_active, reglage_start_time, reglage_end_time)
+        if GPIO.input(BUTTON_PANNE_PIN) == GPIO.HIGH:
+            panne_button_pressed = False
 
-        organisation_button_pressed, organisation_active, organisation_start_time, organisation_end_time = handle_button(
-            13, organisation_button_pressed, organisation_active, organisation_start_time, organisation_end_time)
+        # Check if changement button is pressed
+        if GPIO.input(BUTTON_CHANGEMENT_PIN) == GPIO.LOW and not changement_button_pressed:
+            changement_button_pressed = True
+            if not changement_active:
+                changement_start_time = time.time()
+                changement_active = True
+            else:
+                changement_end_time = time.time()
+                changement_active = False
+            time.sleep(0.2)  # Debounce delay
 
-        changement_button_pressed, changement_active, changement_start_time, changement_end_time = handle_button(
-            22, changement_button_pressed, changement_active, changement_start_time, changement_end_time)
+        if GPIO.input(BUTTON_CHANGEMENT_PIN) == GPIO.HIGH:
+            changement_button_pressed = False
+
+        # Reglage button behavior
+        if GPIO.input(BUTTON_REGLAGE_PIN) == GPIO.LOW and not reglage_button_pressed:
+            reglage_button_pressed = True
+            if not reglage_active:
+                reglage_start_time = time.time()
+                reglage_active = True
+            else:
+                reglage_end_time = time.time()
+                reglage_active = False
+            time.sleep(0.2)  # Debounce delay
+
+        if GPIO.input(BUTTON_REGLAGE_PIN) == GPIO.HIGH:
+            reglage_button_pressed = False
+
+        # Organisation button behavior
+        if GPIO.input(BUTTON_ORGANISATION_PIN) == GPIO.LOW and not organisation_button_pressed:
+            organisation_button_pressed = True
+            if not organisation_active:
+                organisation_start_time = time.time()
+                organisation_active = True
+            else:
+                organisation_end_time = time.time()
+                organisation_active = False
+            time.sleep(0.2)  # Debounce delay
+
+        if GPIO.input(BUTTON_ORGANISATION_PIN) == GPIO.HIGH:
+            organisation_button_pressed = False
+
+        # Production button behavior
+        if GPIO.input(BUTTON_PRODUCTION_PIN) == GPIO.LOW and not production_button_pressed:
+            production_button_pressed = True
+            if not production_active:
+                production_start_time = time.time()
+                production_active = True
+            else:
+                production_end_time = time.time()
+                production_active = False
+            time.sleep(0.2)  # Debounce delay
+
+        if GPIO.input(BUTTON_PRODUCTION_PIN) == GPIO.HIGH:
+            production_button_pressed = False
+
 
         # Display production time on line 2
         if production_active:
@@ -173,7 +244,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         pass
     finally:
-        #from lcd_display import lcd_byte, LCD_CMD, LCD_LINE_1
+        from lcd_display import lcd_byte, LCD_CMD, LCD_LINE_1
         lcd_byte(0x01, LCD_CMD)
         lcd_string("Goodbye!", LCD_LINE_1)
         GPIO.cleanup()

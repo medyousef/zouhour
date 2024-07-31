@@ -18,18 +18,3 @@ def setup_buttons():
     GPIO.setup(BUTTON_REGLAGE_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button input for reglage
     GPIO.setup(BUTTON_ORGANISATION_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button input for organisation
 
-def handle_button(button_pin, button_pressed, active, start_time, end_time):
-    if GPIO.input(button_pin) == GPIO.LOW and not button_pressed:
-        button_pressed = True
-        if not active:
-            start_time = time.time()
-            active = True
-        else:
-            end_time = time.time()
-            active = False
-        time.sleep(0.2)  # Debounce delay
-
-    if GPIO.input(button_pin) == GPIO.HIGH:
-        button_pressed = False
-
-    return button_pressed, active, start_time, end_time
