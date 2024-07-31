@@ -24,6 +24,15 @@ E_PULSE = 0.0005
 E_DELAY = 0.0005
 
 def lcd_init():
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbers
+    GPIO.setup(LCD_E, GPIO.OUT)  # E
+    GPIO.setup(LCD_RS, GPIO.OUT) # RS
+    GPIO.setup(LCD_D4, GPIO.OUT) # DB4
+    GPIO.setup(LCD_D5, GPIO.OUT) # DB5
+    GPIO.setup(LCD_D6, GPIO.OUT) # DB6
+    GPIO.setup(LCD_D7, GPIO.OUT) # DB7
+
     lcd_byte(0x33, LCD_CMD) # 110011 Initialise
     lcd_byte(0x32, LCD_CMD) # 110010 Initialise
     lcd_byte(0x06, LCD_CMD) # 000110 Cursor move direction
