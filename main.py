@@ -138,10 +138,8 @@ def main():
             else:
                 production_end_time = time.time()
                 production_active = False
+                save_to_db(elapsed_time_production, elapsed_time_pause, elapsed_time_panne, elapsed_time_reglage, elapsed_time_organisation, elapsed_time_changement)  # Call save_to_db here
             time.sleep(0.2)  # Debounce delay
-
-        if GPIO.input(BUTTON_PRODUCTION_PIN) == GPIO.HIGH:
-            production_button_pressed = False
 
         # Prepare display messages
         messages = ["Labo ARRAZI", "", "", "", ""]
