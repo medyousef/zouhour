@@ -66,7 +66,7 @@ def main():
             else:
                 pause_end_time = time.time()
                 pause_active = False
-            time.sleep(0.2)  # Debounce delay
+            time.sleep(1)  # 1-second pause after button click
         
         if GPIO.input(BUTTON_PAUSE_PIN) == GPIO.HIGH:
             pause_button_pressed = False
@@ -82,7 +82,7 @@ def main():
             else:
                 panne_end_time = time.time()
                 panne_active = False
-            time.sleep(0.2)  # Debounce delay
+            time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_PANNE_PIN) == GPIO.HIGH:
             panne_button_pressed = False
@@ -97,7 +97,7 @@ def main():
             else:
                 changement_end_time = time.time()
                 changement_active = False
-            time.sleep(0.2)  # Debounce delay
+            time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_CHANGEMENT_PIN) == GPIO.HIGH:
             changement_button_pressed = False
@@ -112,7 +112,7 @@ def main():
             else:
                 reglage_end_time = time.time()
                 reglage_active = False
-            time.sleep(0.2)  # Debounce delay
+            time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_REGLAGE_PIN) == GPIO.HIGH:
             reglage_button_pressed = False
@@ -127,7 +127,7 @@ def main():
             else:
                 organisation_end_time = time.time()
                 organisation_active = False
-            time.sleep(0.2)  # Debounce delay
+            time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_ORGANISATION_PIN) == GPIO.HIGH:
             organisation_button_pressed = False
@@ -143,13 +143,13 @@ def main():
                 production_end_time = time.time()
                 production_active = False
                 save_to_db(elapsed_time_production, elapsed_time_pause, elapsed_time_panne, elapsed_time_reglage, elapsed_time_organisation, elapsed_time_changement)
-            time.sleep(0.2)  # Debounce delay
+            time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_PRODUCTION_PIN) == GPIO.HIGH:
             production_button_pressed = False
 
         # Prepare display messages
-        messages = ["Labo ARRAZI", "", "", "", ""]
+        messages = ["Labo ARRAZI", "", "", ""]
 
         # Update production time
         if production_active:
@@ -194,11 +194,17 @@ def main():
             messages[2] = f"Total Panne: {minutes:02d}:{seconds:02d}"
 
         # Display messages
-        for i, message in enumerate(messages):
-            lcd_string(message, [LCD_LINE_1, LCD_LINE_2, LCD_LINE_3, LCD_LINE_4][i])
-            print(message)
+        lcd_string(messages[0], LCD_LINE_1)
+        lcd_string(messages[1], LCD_LINE_2)
+        lcd_string(messages[2], LCD_LINE_3)
+        lcd_string(messages[3], LCD_LINE_4)
 
-        time.sleep(1)
+        print(messages[0])
+        print(messages[1])
+        print(messages[2])
+        print(messages[3])
+
+        time.sleep(1)  # Pause after each button click
 
 if __name__ == '__main__':
     try:
