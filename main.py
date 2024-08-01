@@ -138,6 +138,7 @@ def main():
             else:
                 production_end_time = time.time()
                 production_active = False
+                save_to_db(elapsed_time_production, elapsed_time_pause, elapsed_time_panne, elapsed_time_reglage, elapsed_time_organisation, elapsed_time_changement)
             time.sleep(0.2)  # Debounce delay
 
         if GPIO.input(BUTTON_PRODUCTION_PIN) == GPIO.HIGH:
@@ -182,53 +183,53 @@ def main():
             messages[2] = f"Panne: {minutes:02d}:{seconds:02d}"
         else:
             if panne_end_time is not None:
-                elapsed_time_panne += int(panne_end_time - panne_start_time - total_pause_time_during_panne)
+                elapsed_time_panne += int(panne_end_time - panne_start_time)
                 panne_end_time = None
             minutes = elapsed_time_panne // 60
             seconds = elapsed_time_panne % 60
             messages[2] = f"Total Panne: {minutes:02d}:{seconds:02d}"
 
-        # Update reglage time
-        if reglage_active:
-            current_time = int(time.time() - reglage_start_time)
-            minutes = current_time // 60
-            seconds = current_time % 60
-            messages[2] = f"Reglage: {minutes:02d}:{seconds:02d}"
-        else:
-            if reglage_end_time is not None:
-                elapsed_time_reglage += int(reglage_end_time - reglage_start_time)
-                reglage_end_time = None
-            minutes = elapsed_time_reglage // 60
-            seconds = elapsed_time_reglage % 60
-            messages[2] = f"Total Reglage: {minutes:02d}:{seconds:02d}"
+        # # Update reglage time
+        # if reglage_active:
+        #     current_time = int(time.time() - reglage_start_time)
+        #     minutes = current_time // 60
+        #     seconds = current_time % 60
+        #     messages[2] = f"Reglage: {minutes:02d}:{seconds:02d}"
+        # else:
+        #     if reglage_end_time is not None:
+        #         elapsed_time_reglage += int(reglage_end_time - reglage_start_time)
+        #         reglage_end_time = None
+        #     minutes = elapsed_time_reglage // 60
+        #     seconds = elapsed_time_reglage % 60
+        #     messages[2] = f"Total Reglage: {minutes:02d}:{seconds:02d}"
 
-        # Update organisation time
-        if organisation_active:
-            current_time = int(time.time() - organisation_start_time)
-            minutes = current_time // 60
-            seconds = current_time % 60
-            messages[2] = f"Organisation: {minutes:02d}:{seconds:02d}"
-        else:
-            if organisation_end_time is not None:
-                elapsed_time_organisation += int(organisation_end_time - organisation_start_time)
-                organisation_end_time = None
-            minutes = elapsed_time_organisation // 60
-            seconds = elapsed_time_organisation % 60
-            messages[2] = f"Total Organisation: {minutes:02d}:{seconds:02d}"
+        # # Update organisation time
+        # if organisation_active:
+        #     current_time = int(time.time() - organisation_start_time)
+        #     minutes = current_time // 60
+        #     seconds = current_time % 60
+        #     messages[2] = f"Organisation: {minutes:02d}:{seconds:02d}"
+        # else:
+        #     if organisation_end_time is not None:
+        #         elapsed_time_organisation += int(organisation_end_time - organisation_start_time)
+        #         organisation_end_time = None
+        #     minutes = elapsed_time_organisation // 60
+        #     seconds = elapsed_time_organisation % 60
+        #     messages[2] = f"Total Organisation: {minutes:02d}:{seconds:02d}"
 
-        # Update changement time
-        if changement_active:
-            current_time = int(time.time() - changement_start_time)
-            minutes = current_time // 60
-            seconds = current_time % 60
-            messages[2] = f"Changement: {minutes:02d}:{seconds:02d}"
-        else:
-            if changement_end_time is not None:
-                elapsed_time_changement += int(changement_end_time - changement_start_time)
-                changement_end_time = None
-            minutes = elapsed_time_changement // 60
-            seconds = elapsed_time_changement % 60
-            messages[2] = f"Total Changement: {minutes:02d}:{seconds:02d}"
+        # # Update changement time
+        # if changement_active:
+        #     current_time = int(time.time() - changement_start_time)
+        #     minutes = current_time // 60
+        #     seconds = current_time % 60
+        #     messages[2] = f"Changement: {minutes:02d}:{seconds:02d}"
+        # else:
+        #     if changement_end_time is not None:
+        #         elapsed_time_changement += int(changement_end_time - changement_start_time)
+        #         changement_end_time = None
+        #     minutes = elapsed_time_changement // 60
+        #     seconds = elapsed_time_changement % 60
+        #     messages[2] = f"Total Changement: {minutes:02d}:{seconds:02d}"
 
         # Display messages
         lcd_string(messages[0], LCD_LINE_1)
@@ -248,3 +249,4 @@ if __name__ == '__main__':
         lcd_byte(0x01, LCD_CMD)
         lcd_string("Goodbye!", LCD_LINE_1)
         GPIO.cleanup()
+             
