@@ -53,6 +53,7 @@ def main():
     while True:
         # Display initial messages
         lcd_string("Labo ARRAZI", LCD_LINE_1)
+        print("Labo ARRAZI")
 
         # Handle buttons
         # Check if pause button is pressed
@@ -88,7 +89,7 @@ def main():
 
         # Check if changement button is pressed
         if GPIO.input(BUTTON_CHANGEMENT_PIN) == GPIO.LOW and not changement_button_pressed:
-            print("changement button pressed")
+            print("Changement button pressed")
             changement_button_pressed = True
             if not changement_active:
                 changement_start_time = time.time()
@@ -103,7 +104,7 @@ def main():
 
         # Reglage button behavior
         if GPIO.input(BUTTON_REGLAGE_PIN) == GPIO.LOW and not reglage_button_pressed:
-            print("reglage button pressed")
+            print("Reglage button pressed")
             reglage_button_pressed = True
             if not reglage_active:
                 reglage_start_time = time.time()
@@ -118,7 +119,7 @@ def main():
 
         # Organisation button behavior
         if GPIO.input(BUTTON_ORGANISATION_PIN) == GPIO.LOW and not organisation_button_pressed:
-            print("organisation button pressed")
+            print("Organisation button pressed")
             organisation_button_pressed = True
             if not organisation_active:
                 organisation_start_time = time.time()
@@ -133,7 +134,7 @@ def main():
 
         # Production button behavior
         if GPIO.input(BUTTON_PRODUCTION_PIN) == GPIO.LOW and not production_button_pressed:
-            print("production button pressed")
+            print("Production button pressed")
             production_button_pressed = True
             if not production_active:
                 production_start_time = time.time()
@@ -192,55 +193,12 @@ def main():
             seconds = elapsed_time_panne % 60
             messages[2] = f"Total Panne: {minutes:02d}:{seconds:02d}"
 
-        # # Update reglage time
-        # if reglage_active:
-        #     current_time = int(time.time() - reglage_start_time)
-        #     minutes = current_time // 60
-        #     seconds = current_time % 60
-        #     messages[2] = f"Reglage: {minutes:02d}:{seconds:02d}"
-        # else:
-        #     if reglage_end_time is not None:
-        #         elapsed_time_reglage += int(reglage_end_time - reglage_start_time)
-        #         reglage_end_time = None
-        #     minutes = elapsed_time_reglage // 60
-        #     seconds = elapsed_time_reglage % 60
-        #     messages[2] = f"Total Reglage: {minutes:02d}:{seconds:02d}"
-
-        # # Update organisation time
-        # if organisation_active:
-        #     current_time = int(time.time() - organisation_start_time)
-        #     minutes = current_time // 60
-        #     seconds = current_time % 60
-        #     messages[2] = f"Organisation: {minutes:02d}:{seconds:02d}"
-        # else:
-        #     if organisation_end_time is not None:
-        #         elapsed_time_organisation += int(organisation_end_time - organisation_start_time)
-        #         organisation_end_time = None
-        #     minutes = elapsed_time_organisation // 60
-        #     seconds = elapsed_time_organisation % 60
-        #     messages[2] = f"Total Organisation: {minutes:02d}:{seconds:02d}"
-
-        # # Update changement time
-        # if changement_active:
-        #     current_time = int(time.time() - changement_start_time)
-        #     minutes = current_time // 60
-        #     seconds = current_time % 60
-        #     messages[2] = f"Changement: {minutes:02d}:{seconds:02d}"
-        # else:
-        #     if changement_end_time is not None:
-        #         elapsed_time_changement += int(changement_end_time - changement_start_time)
-        #         changement_end_time = None
-        #     minutes = elapsed_time_changement // 60
-        #     seconds = elapsed_time_changement % 60
-        #     messages[2] = f"Total Changement: {minutes:02d}:{seconds:02d}"
-
         # Display messages
-        lcd_string(messages[0], LCD_LINE_1)
-        lcd_string(messages[1], LCD_LINE_2)
-        lcd_string(messages[2], LCD_LINE_3)
-        lcd_string(messages[3], LCD_LINE_4)
+        for i, message in enumerate(messages):
+            lcd_string(message, [LCD_LINE_1, LCD_LINE_2, LCD_LINE_3, LCD_LINE_4][i])
+            print(message)
 
-        time.sleep(0.1)
+        time.sleep(1)
 
 if __name__ == '__main__':
     try:
@@ -249,7 +207,9 @@ if __name__ == '__main__':
         pass
     finally:
         from lcd_display import lcd_byte, LCD_CMD, LCD_LINE_1
-        lcd_byte(0x01, LCD_CMD)
+        lcd_byte(0x01, LCD_CMD)  # Clear the display
         lcd_string("Goodbye!", LCD_LINE_1)
+        print("Goodbye!")
+        time.sleep(2)  # Give enough time to display the goodbye message
+        lcd_byte(0x01, LCD_CMD)  # Clear the display again
         GPIO.cleanup()
-             
