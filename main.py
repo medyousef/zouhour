@@ -88,6 +88,7 @@ def main():
 
         # Check if changement button is pressed
         if GPIO.input(BUTTON_CHANGEMENT_PIN) == GPIO.LOW and not changement_button_pressed:
+            print("changement button pressed")
             changement_button_pressed = True
             if not changement_active:
                 changement_start_time = time.time()
@@ -102,6 +103,7 @@ def main():
 
         # Reglage button behavior
         if GPIO.input(BUTTON_REGLAGE_PIN) == GPIO.LOW and not reglage_button_pressed:
+            print("reglage button pressed")
             reglage_button_pressed = True
             if not reglage_active:
                 reglage_start_time = time.time()
@@ -116,6 +118,7 @@ def main():
 
         # Organisation button behavior
         if GPIO.input(BUTTON_ORGANISATION_PIN) == GPIO.LOW and not organisation_button_pressed:
+            print("organisation button pressed")
             organisation_button_pressed = True
             if not organisation_active:
                 organisation_start_time = time.time()
