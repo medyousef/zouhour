@@ -57,6 +57,7 @@ def main():
         # Handle buttons
         # Check if pause button is pressed
         if GPIO.input(BUTTON_PAUSE_PIN) == GPIO.LOW and not pause_button_pressed:
+            print("Pause button pressed")
             pause_button_pressed = True
             if not pause_active:
                 pause_start_time = time.time()
@@ -64,16 +65,14 @@ def main():
             else:
                 pause_end_time = time.time()
                 pause_active = False
-                # Accumulate pause time if panne is active
-                if panne_active:
-                    total_pause_time_during_panne += pause_end_time - pause_start_time
             time.sleep(0.2)  # Debounce delay
-
+        
         if GPIO.input(BUTTON_PAUSE_PIN) == GPIO.HIGH:
             pause_button_pressed = False
 
         # Check if panne button is pressed
-        if GPIO.input(BUTTON_PANNE_PIN) == GPIO.LOW and not panne_button_pressed:
+        if GPIO.input(BUTTON_PANNE_PIN) == GPIO.LOW and not panne_button_pressed: 
+            print("Panne button pressed")
             panne_button_pressed = True
             if not panne_active:
                 panne_start_time = time.time()
@@ -131,6 +130,7 @@ def main():
 
         # Production button behavior
         if GPIO.input(BUTTON_PRODUCTION_PIN) == GPIO.LOW and not production_button_pressed:
+            print("production button pressed")
             production_button_pressed = True
             if not production_active:
                 production_start_time = time.time()
