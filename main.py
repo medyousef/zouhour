@@ -271,7 +271,6 @@ def main():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbers
     setup_buttons()
-    # lcd_init()  # Commenting out the LCD initialization
 
     production_start_time = None
     production_end_time = None
@@ -323,8 +322,9 @@ def main():
             else:
                 pause_end_time = time.time()
                 pause_active = False
+                print(f"Pause elapsed time: {int(pause_end_time - pause_start_time)} seconds")
             time.sleep(1)  # 1-second pause after button click
-
+        
         if GPIO.input(BUTTON_PAUSE_PIN) == GPIO.HIGH:
             pause_button_pressed = False
 
@@ -338,6 +338,7 @@ def main():
             else:
                 panne_end_time = time.time()
                 panne_active = False
+                print(f"Panne elapsed time: {int(panne_end_time - panne_start_time)} seconds")
             time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_PANNE_PIN) == GPIO.HIGH:
@@ -352,6 +353,7 @@ def main():
             else:
                 changement_end_time = time.time()
                 changement_active = False
+                print(f"Changement elapsed time: {int(changement_end_time - changement_start_time)} seconds")
             time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_CHANGEMENT_PIN) == GPIO.HIGH:
@@ -366,6 +368,7 @@ def main():
             else:
                 reglage_end_time = time.time()
                 reglage_active = False
+                print(f"Reglage elapsed time: {int(reglage_end_time - reglage_start_time)} seconds")
             time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_REGLAGE_PIN) == GPIO.HIGH:
@@ -380,6 +383,7 @@ def main():
             else:
                 organisation_end_time = time.time()
                 organisation_active = False
+                print(f"Organisation elapsed time: {int(organisation_end_time - organisation_start_time)} seconds")
             time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_ORGANISATION_PIN) == GPIO.HIGH:
@@ -395,59 +399,66 @@ def main():
                 production_end_time = time.time()
                 production_active = False
                 save_to_db(elapsed_time_production, elapsed_time_pause, elapsed_time_panne, elapsed_time_reglage, elapsed_time_organisation, elapsed_time_changement)
+                print(f"Production elapsed time: {int(production_end_time - production_start_time)} seconds")
             time.sleep(1)  # 1-second pause after button click
 
         if GPIO.input(BUTTON_PRODUCTION_PIN) == GPIO.HIGH:
             production_button_pressed = False
 
-        # Prepare console messages
-        messages = []
-
         # Update production time
         if production_active:
             current_time = int(time.time() - production_start_time)
-            minutes = current_time // 60
-            seconds = current_time % 60
-            messages.append(f"Production: {minutes:02d}:{seconds:02d}")
+            elapsed_time_production = current_time
+
         else:
             if production_end_time is not None:
                 elapsed_time_production += int(production_end_time - production_start_time)
                 production_end_time = None
-            minutes = elapsed_time_production // 60
-            seconds = elapsed_time_production % 60
-            messages.append(f"Total Production: {minutes:02d}:{seconds:02d}")
 
         # Update pause time
         if pause_active:
             current_time = int(time.time() - pause_start_time)
-            minutes = current_time // 60
-            seconds = current_time % 60
-            messages.append(f"Pause: {minutes:02d}:{seconds:02d}")
+            elapsed_time_pause = current_time
         else:
             if pause_end_time is not None:
                 elapsed_time_pause += int(pause_end_time - pause_start_time)
                 pause_end_time = None
-            minutes = elapsed_time_pause // 60
-            seconds = elapsed_time_pause % 60
-            messages.append(f"Total Pause: {minutes:02d}:{seconds:02d}")
 
         # Update panne time
         if panne_active:
             current_time = int(time.time() - panne_start_time - total_pause_time_during_panne)
-            minutes = current_time // 60
-            seconds = current_time % 60
-            messages.append(f"Panne: {minutes:02d}:{seconds:02d}")
+            elapsed_time_panne = current_time
         else:
             if panne_end_time is not None:
                 elapsed_time_panne += int(panne_end_time - panne_start_time)
                 panne_end_time = None
-            minutes = elapsed_time_panne // 60
-            seconds = elapsed_time_panne % 60
-            messages.append(f"Total Panne: {minutes:02d}:{seconds:02d}")
 
-        # Print only active messages
-        for message in messages:
-            print(message)
+        # Update reglage time
+        if reglage_active:
+            current_time = int(time.time() - reglage_start_time)
+            elapsed_time_reglage = current_time
+        else:
+            if reglage_end_time is not None:
+                elapsed_time_reglage += int(reglage_end_time - reglage_start_time)
+                reglage_end_time = None
+
+        # Update organisation time
+        if organisation_active:
+            current_time = int(time.time() - organisation_start_time)
+            elapsed_time_organisation = current_time
+        else:
+            if organisation_end_time is not None:
+                elapsed_time_organisation += int(organisation_end_time - organisation_start_time)
+                organisation_end_time = None
+
+        # Update changement time
+        if changement_active:
+            current_time = int(time.time() - changement_start_time)
+            elapsed_time_changement = current_time
+        else:
+            if changement_end_time is not None:
+                elapsed_time_changement += int(changement_end_time - changement_start_time)
+                changement_end_time = None
 
         time.sleep(1)  # Pause after each button click
 
@@ -457,5 +468,4 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         pass
     finally:
-        print("Goodbye!")
         GPIO.cleanup()
