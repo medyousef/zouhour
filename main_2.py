@@ -47,6 +47,7 @@ def main():
     total_pause_time_during_panne = 0
 
     while True:
+        time.sleep(2)
         print("Labo ARRAZI")
 
         # Handle buttons
