@@ -49,7 +49,7 @@ def main():
     states = {
         'production': {'button_pin': BUTTON_PRODUCTION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'pause': {'button_pin': BUTTON_PAUSE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
-        'panne': {'button_pin': BUTTON_PANNE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0, 'total_pause_time_during_panne': 0},
+        'panne': {'button_pin': BUTTON_PANNE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'changement': {'button_pin': BUTTON_CHANGEMENT_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'reglage': {'button_pin': BUTTON_REGLAGE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'organisation': {'button_pin': BUTTON_ORGANISATION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0}
@@ -64,30 +64,33 @@ def main():
         if production_state['active']:
             print(f"Production: {minutes:02d}:{seconds:02d}")
         else:
-            print(f"Total Production: {minutes:02d}:{seconds:02d}")
-            # Save to DB when production ends
-            save_to_db(
-                states['production']['elapsed_time'],
-                states['pause']['elapsed_time'],
-                states['panne']['elapsed_time'],
-                states['reglage']['elapsed_time'],
-                states['organisation']['elapsed_time'],
-                states['changement']['elapsed_time']
-            )
-            # Reset all elapsed times to zero
-            for state in states.values():
-                state['elapsed_time'] = 0
+            if production_state['button_pressed']:  # Save to DB only when button is pressed to stop production
+                print(f"Total Production: {minutes:02d}:{seconds:02d}")
+                save_to_db(
+                    states['production']['elapsed_time'],
+                    states['pause']['elapsed_time'],
+                    states['panne']['elapsed_time'],
+                    states['reglage']['elapsed_time'],
+                    states['organisation']['elapsed_time'],
+                    states['changement']['elapsed_time']
+                )
+                # Reset all elapsed times to zero
+                for state in states.values():
+                    state['elapsed_time'] = 0
         
         # Handle pause state
         pause_state = states['pause']
         minutes, seconds = handle_button(pause_state, pause_state['button_pin'])
-        print(f"Pause: {minutes:02d}:{seconds:02d}")
-        
+        if pause_state['active'] and pause_state['button_pressed']:  # Ensure pause only counts when active and button was pressed
+            print(f"Pause: {minutes:02d}:{seconds:02d}")
+
+
         # Handle other states in a loop
         for state_name in ['panne', 'changement', 'reglage', 'organisation']:
             state = states[state_name]
             minutes, seconds = handle_button(state, state['button_pin'])
-            print(f"{state_name.capitalize()}: {minutes:02d}:{seconds:02d}")
+            if state['active']:  # Ensure only active states are printed and updated
+                print(f"{state_name.capitalize()}: {minutes:02d}:{seconds:02d}")
         
         time.sleep(1)
 
