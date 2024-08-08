@@ -27,7 +27,7 @@ def update_times(state):
     seconds = current_time % 60
     return minutes, seconds
 
-def handle_button(state, button_pin, states=None):
+def handle_button(state, button_pin):
     if GPIO.input(button_pin) == GPIO.LOW and not state['button_pressed']:
         state['button_pressed'] = True
         if not state['active']:
@@ -36,12 +36,6 @@ def handle_button(state, button_pin, states=None):
         else:
             state['end_time'] = time.time()
             state['active'] = False
-            if states and state == states['pause']:  # Check if the button is the pause button
-                pause_duration = get_elapsed_time(state['start_time'], state['end_time'])
-                if states['panne']['active']:
-                    states['panne']['total_pause_time_during_panne'] += pause_duration
-                if states['reglage']['active']:
-                    states['reglage']['elapsed_time'] -= pause_duration
 
     if GPIO.input(button_pin) == GPIO.HIGH:
         state['button_pressed'] = False
@@ -61,34 +55,22 @@ def main():
         'organisation': {'button_pin': BUTTON_ORGANISATION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0}
     }
     
-    output_interval = 1  # seconds
-    accumulated_time = 0  # initialize accumulated time to zero
-    sleep_interval = 0.1  # seconds, the interval at which the loop checks button states
-    
     while True:
-        for state_name, state in states.items():
-            handle_button(state, state['button_pin'], states)  # pass the states dictionary to handle_button
-
-        time.sleep(sleep_interval)  # sleep for a short interval to avoid blocking button checks
-        accumulated_time += sleep_interval  # add the sleep interval to the accumulated time
+        print("Labo ARRAZI")
         
-        if accumulated_time >= output_interval:  # check if the accumulated time has reached the output interval
-            print("Labo ARRAZI")  # print the header
-            for state_name, state in states.items():
-                minutes, seconds = update_times(state)  # get the updated times
-                if state_name == 'production':
-                    if state['active']:
-                        print(f"Production: {minutes:02d}:{seconds:02d}")  # print active production time
-                    else:
-                        print(f"Total Production: {minutes:02d}:{seconds:02d}")  # print total production time
-                        save_to_db(state['elapsed_time'], states['pause']['elapsed_time'], states['panne']['elapsed_time'], states['reglage']['elapsed_time'], states['organisation']['elapsed_time'], states['changement']['elapsed_time'])  # save data to database
-                        # Reset all elapsed times to zero
-                        for state in states.values():
-                            state['elapsed_time'] = 0
+        for state_name, state in states.items():
+            minutes, seconds = handle_button(state, state['button_pin'])
+            if state_name == 'production':
+                if state['active']:
+                    print(f"Production: {minutes:02d}:{seconds:02d}")
                 else:
-                    print(f"{state_name.capitalize()}: {minutes:02d}:{seconds:02d}")  # print other states' times
-            accumulated_time = 0  # reset accumulated time after printing
-
+                    print(f"Total Production: {minutes:02d}:{seconds:02d}")
+                    save_to_db(state['elapsed_time'], states['pause']['elapsed_time'], states['panne']['elapsed_time'], states['reglage']['elapsed_time'], states['organisation']['elapsed_time'], states['changement']['elapsed_time'])
+                    for state in states.values():
+                        state['elapsed_time'] = 0
+            else:
+                print(f"{state_name.capitalize()}: {minutes:02d}:{seconds:02d}")
+        time.sleep(1)
 if __name__ == '__main__':
     try:
         main()
