@@ -65,13 +65,23 @@ def main():
                     print(f"Production: {minutes:02d}:{seconds:02d}")
                 else:
                     print(f"Total Production: {minutes:02d}:{seconds:02d}")
-                    save_to_db(state['elapsed_time'], states['pause']['elapsed_time'], states['panne']['elapsed_time'], states['reglage']['elapsed_time'], states['organisation']['elapsed_time'], states['changement']['elapsed_time'])
-                    time.sleep(1)
+                    # Save to DB when production ends
+                    save_to_db(
+                        states['production']['elapsed_time'],
+                        states['pause']['elapsed_time'],
+                        states['panne']['elapsed_time'],
+                        states['reglage']['elapsed_time'],
+                        states['organisation']['elapsed_time'],
+                        states['changement']['elapsed_time']
+                    )
+                    # Reset all elapsed times to zero
                     for state in states.values():
                         state['elapsed_time'] = 0
             else:
                 print(f"{state_name.capitalize()}: {minutes:02d}:{seconds:02d}")
+        
         time.sleep(1)
+
 if __name__ == '__main__':
     try:
         main()
