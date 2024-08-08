@@ -58,27 +58,36 @@ def main():
     while True:
         print("Labo ARRAZI")
         
-        for state_name, state in states.items():
+        # Handle production state
+        production_state = states['production']
+        minutes, seconds = handle_button(production_state, production_state['button_pin'])
+        if production_state['active']:
+            print(f"Production: {minutes:02d}:{seconds:02d}")
+        else:
+            print(f"Total Production: {minutes:02d}:{seconds:02d}")
+            # Save to DB when production ends
+            save_to_db(
+                states['production']['elapsed_time'],
+                states['pause']['elapsed_time'],
+                states['panne']['elapsed_time'],
+                states['reglage']['elapsed_time'],
+                states['organisation']['elapsed_time'],
+                states['changement']['elapsed_time']
+            )
+            # Reset all elapsed times to zero
+            for state in states.values():
+                state['elapsed_time'] = 0
+        
+        # Handle pause state
+        pause_state = states['pause']
+        minutes, seconds = handle_button(pause_state, pause_state['button_pin'])
+        print(f"Pause: {minutes:02d}:{seconds:02d}")
+        
+        # Handle other states in a loop
+        for state_name in ['panne', 'changement', 'reglage', 'organisation']:
+            state = states[state_name]
             minutes, seconds = handle_button(state, state['button_pin'])
-            if state_name == 'production':
-                if state['active']:
-                    print(f"Production: {minutes:02d}:{seconds:02d}")
-                else:
-                    print(f"Total Production: {minutes:02d}:{seconds:02d}")
-                    # Save to DB when production ends
-                    save_to_db(
-                        states['production']['elapsed_time'],
-                        states['pause']['elapsed_time'],
-                        states['panne']['elapsed_time'],
-                        states['reglage']['elapsed_time'],
-                        states['organisation']['elapsed_time'],
-                        states['changement']['elapsed_time']
-                    )
-                    # Reset all elapsed times to zero
-                    for state in states.values():
-                        state['elapsed_time'] = 0
-            else:
-                print(f"{state_name.capitalize()}: {minutes:02d}:{seconds:02d}")
+            print(f"{state_name.capitalize()}: {minutes:02d}:{seconds:02d}")
         
         time.sleep(1)
 
