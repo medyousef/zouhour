@@ -10,10 +10,11 @@ try:
         vibration_detected = GPIO.input(16)
         if vibration_detected:
             #print(1)  # Vibration detected
-            vibration_detected
+           print("value detected" + vibration_detected)
         else:
-            print(0)  # No vibration
-        time.sleep(0.1)  # Adjust the delay as needed
+            print("value not detected" + vibration_detected)
+        #    print(0)  # No vibration
+        time.sleep(0.5)  # Adjust the delay as needed
 
 except KeyboardInterrupt:
     print("Exiting program")
