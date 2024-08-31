@@ -11,7 +11,7 @@ try:
             #print(1)  # Vibration detected
         print("value detected " + str(vibration_detected))
         #    print(0)  # No vibration
-        time.sleep(1)  # Adjust the delay as needed
+        time.sleep(0.1)  # Adjust the delay as needed
 
 except KeyboardInterrupt:
     print("Exiting program")
