@@ -8,10 +8,10 @@ buzzer_pin = 4
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(buzzer_pin, GPIO.OUT)
 
-def buzz(tone_val, duration):
+def buzz(tone_val):
     pwm = GPIO.PWM(buzzer_pin, tone_val)
     pwm.start(50)  # 50% duty cycle
-    time.sleep(duration)
+    time.sleep(30)
     pwm.stop()
 
 try:
