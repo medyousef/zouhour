@@ -18,7 +18,7 @@ try:
     while True:
         # Simulated proximity values for testing
         for proximity_data in [60, 120, 260]:  # Simulates increasing proximity
-        
+            print(proximity_data)
             if proximity_data > 250:
                 for x in range(180):
                     sin_val = math.sin(x * (math.pi / 180))
