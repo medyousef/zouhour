@@ -10,7 +10,7 @@ GPIO.setup(buzzer_pin, GPIO.OUT)
 
 def buzz(tone_val, duration):
     pwm = GPIO.PWM(buzzer_pin, tone_val)
-    pwm.start(50)
+    pwm.start(50)  # 50% duty cycle
     time.sleep(duration)
     pwm.stop()
 
@@ -22,19 +22,19 @@ try:
             if proximity_data > 250:
                 for x in range(180):
                     sin_val = math.sin(x * (math.pi / 180))
-                    tone_val = 3000 + int(sin_val * 1000)
+                    tone_val = 4000 + int(sin_val * 1000)  # Start tone at 4000 Hz
                     buzz(tone_val, 0.1)
 
             elif proximity_data > 100:
                 for x in range(180):
                     sin_val = math.sin(x * (math.pi / 180))
-                    tone_val = 2000 + int(sin_val * 1000)
+                    tone_val = 5000 + int(sin_val * 1000)  # Start tone at 5000 Hz
                     buzz(tone_val, 0.1)
 
             elif proximity_data > 50:
                 for x in range(180):
                     sin_val = math.sin(x * (math.pi / 180))
-                    tone_val = 1000 + int(sin_val * 1000)
+                    tone_val = 6000 + int(sin_val * 1000)  # Start tone at 6000 Hz
                     buzz(tone_val, 0.1)
 
             time.sleep(0.25)
