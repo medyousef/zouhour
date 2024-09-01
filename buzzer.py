@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 
 # Setup
@@ -8,7 +9,6 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(buzzer_pin, GPIO.OUT)
 
 pwm = GPIO.PWM(buzzer_pin, 3000)  # Initialize PWM with a fixed frequency
-#pwm.start(50)  # Start with a 50% duty cycle
 
 try:
     while True:
@@ -16,10 +16,11 @@ try:
         pwm.start(50)  # Start buzzing
         time.sleep(3)
 
-        # Rest for 3 seconds
+        # Stop buzzing
         pwm.stop()  # Stop buzzing
         time.sleep(3)
 
 except KeyboardInterrupt:
     pwm.stop()
     GPIO.cleanup()
+
