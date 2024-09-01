@@ -1,6 +1,5 @@
 import RPi.GPIO as GPIO
 import time
-import math
 
 # Setup
 buzzer_pin = 4
@@ -8,17 +7,18 @@ buzzer_pin = 4
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(buzzer_pin, GPIO.OUT)
 
-pwm = GPIO.PWM(buzzer_pin, 440)  # Start PWM with an arbitrary frequency
+pwm = GPIO.PWM(buzzer_pin, 3000)  # Initialize PWM with a fixed frequency
 pwm.start(50)  # Start with a 50% duty cycle
 
 try:
     while True:
-        # Continuously adjust the frequency
-        for x in range(180):
-            sin_val = math.sin(x * (math.pi / 180))
-            tone_val = 3000 + int(sin_val * 1000)
-            pwm.ChangeFrequency(tone_val)
-            time.sleep(5)  # Adjust to make the buzzing continuous and smooth
+        # Buzz for 3 seconds
+        pwm.start(50)  # Start buzzing
+        time.sleep(3)
+
+        # Rest for 3 seconds
+        pwm.stop()  # Stop buzzing
+        time.sleep(3)
 
 except KeyboardInterrupt:
     pwm.stop()
