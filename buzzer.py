@@ -17,6 +17,10 @@ try:
         # Stop buzzing completely
         pwm.stop()  # Stop the PWM, turning the buzzer off
         time.sleep(3)  # Pause for 3 seconds with the buzzer off
+        pwm.start(50)  # Start PWM with a 50% duty cycle (buzzer on)
+        time.sleep(3)  # Buzz for 3 seconds
+        pwm.stop()  # Stop the PWM, turning the buzzer off
+        time.sleep(3)  # Pause for 3 seconds with the buzzer off
 
 except KeyboardInterrupt:
     GPIO.cleanup()
