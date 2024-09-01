@@ -18,7 +18,7 @@ try:
             sin_val = math.sin(x * (math.pi / 180))
             tone_val = 3000 + int(sin_val * 1000)
             pwm.ChangeFrequency(tone_val)
-            time.sleep(0.01)  # Adjust to make the buzzing continuous and smooth
+            time.sleep(5)  # Adjust to make the buzzing continuous and smooth
 
 except KeyboardInterrupt:
     pwm.stop()
