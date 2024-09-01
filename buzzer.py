@@ -16,27 +16,28 @@ def buzz(tone_val, duration):
 
 try:
     while True:
-        proximity_data = get_proximity_value()  # Replace with actual proximity sensor reading logic
+        # Simulated proximity values for testing
+        for proximity_data in [60, 120, 260]:  # Simulates increasing proximity
         
-        if proximity_data > 250:
-            for x in range(180):
-                sin_val = math.sin(x * (math.pi / 180))
-                tone_val = 3000 + int(sin_val * 1000)
-                buzz(tone_val, 0.1)
-        
-        elif proximity_data > 100:
-            for x in range(180):
-                sin_val = math.sin(x * (math.pi / 180))
-                tone_val = 2000 + int(sin_val * 1000)
-                buzz(tone_val, 0.1)
-        
-        elif proximity_data > 50:
-            for x in range(180):
-                sin_val = math.sin(x * (math.pi / 180))
-                tone_val = 1000 + int(sin_val * 1000)
-                buzz(tone_val, 0.1)
-        
-        time.sleep(0.25)
+            if proximity_data > 250:
+                for x in range(180):
+                    sin_val = math.sin(x * (math.pi / 180))
+                    tone_val = 3000 + int(sin_val * 1000)
+                    buzz(tone_val, 0.1)
+
+            elif proximity_data > 100:
+                for x in range(180):
+                    sin_val = math.sin(x * (math.pi / 180))
+                    tone_val = 2000 + int(sin_val * 1000)
+                    buzz(tone_val, 0.1)
+
+            elif proximity_data > 50:
+                for x in range(180):
+                    sin_val = math.sin(x * (math.pi / 180))
+                    tone_val = 1000 + int(sin_val * 1000)
+                    buzz(tone_val, 0.1)
+
+            time.sleep(0.25)
 
 except KeyboardInterrupt:
     GPIO.cleanup()
