@@ -23,19 +23,19 @@ try:
             for x in range(180):
                 sin_val = math.sin(x * (math.pi / 180))
                 tone_val = 3000 + int(sin_val * 1000)
-                buzz(tone_val, 0.1)
+                buzz(tone_val, 0.5)
 
         elif proximity_data > 100:
             for x in range(180):
                 sin_val = math.sin(x * (math.pi / 180))
                 tone_val = 2000 + int(sin_val * 1000)
-                buzz(tone_val, 0.1)
+                buzz(tone_val, 0.5)
 
         elif proximity_data > 50:
             for x in range(180):
                 sin_val = math.sin(x * (math.pi / 180))
                 tone_val = 1000 + int(sin_val * 1000)
-                buzz(tone_val, 0.1)
+                buzz(tone_val, 0.5)
 
             time.sleep(0.25)
 
