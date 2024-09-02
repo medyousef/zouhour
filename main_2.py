@@ -29,7 +29,7 @@ def main():
     start_time = time.time()
     while True:
         print("Labo ARRAZI")
-        #is_machine_on = False
+        is_machine_on = False
         # vibration_detected = GPIO.input(16)
         # detection_values.append(vibration_detected)
         # #if time.time() - start_time >= 1:
