@@ -26,15 +26,13 @@ def main():
         'reglage': {'button_pin': BUTTON_REGLAGE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'organisation': {'button_pin': BUTTON_ORGANISATION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0}
     }
-    
+
     while True:
         print("Labo ARRAZI")
         is_machine_on = False
         vibration_detected = GPIO.input(16)
         detection_values.append(vibration_detected)
-        start_time = time.time()
         #if time.time() - start_time >= 1:
-        print(str(mean_value))
         mean_value = sum(detection_values) / len(detection_values)
         print("Mean value detected: {:.5f}".format(mean_value))
         detection_values = []  # Reset the list
