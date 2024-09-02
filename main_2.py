@@ -186,10 +186,10 @@ def main():
             print(f"Organisation: {minutes:02d}:{seconds:02d}")
 
         # Check if machine is on and log test
-        if not is_machine_on and not (states['panne']['active'] or states['pause']['active'] or states['organisation']['active'] or states['reglage']['active'] or states['changement']['active']):
-            print("test")
-        else:
-            print("test")
+        # if not is_machine_on and not (states['panne']['active'] or states['pause']['active'] or states['organisation']['active'] or states['reglage']['active'] or states['changement']['active']):
+        #     print("test")
+        # else:
+        #     print("test")
 
         # Delay to prevent excessive CPU usage
         time.sleep(0.1)
