@@ -72,6 +72,12 @@ def main():
                 states['pause']['active'] = False
                 elapsed_time = int(states['pause']['end_time'] - states['pause']['start_time'])
                 states['pause']['elapsed_time'] += elapsed_time
+                
+                if states['reglage']['active']:
+                    states['reglage']['elapsed_time'] -= elapsed_time
+
+                if states['panne']['active']:
+                    states['panne']['elapsed_time'] -= elapsed_time
 
         if GPIO.input(states['pause']['button_pin']) == GPIO.HIGH:
             states['pause']['button_pressed'] = False
