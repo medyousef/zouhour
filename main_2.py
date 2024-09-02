@@ -55,7 +55,7 @@ def main():
             print("length"+str(len(detection_values)))
             detection_values = []  # Reset the list
             start_time_vibration = time.time()  # Reset the timer
-        
+        time.sleep(1)
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
             states['production']['button_pressed'] = True
