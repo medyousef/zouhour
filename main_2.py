@@ -33,18 +33,18 @@ def main():
         vibration_detected = GPIO.input(16)
         detection_values.append(vibration_detected)
         start_time = time.time()
-        if time.time() - start_time >= 1:
-            print(str(mean_value))
-            mean_value = sum(detection_values) / len(detection_values)
-            print("Mean value detected: {:.5f}".format(mean_value))
-            detection_values = []  # Reset the list
-            start_time = time.time()  # Reset the timer
-            if mean_value == 1.00000 :
-                is_machine_on = False
-                print("Machine is not on")
-            else:
-                is_machine_on = True
-                print("Machine is on")
+        #if time.time() - start_time >= 1:
+        print(str(mean_value))
+        mean_value = sum(detection_values) / len(detection_values)
+        print("Mean value detected: {:.5f}".format(mean_value))
+        detection_values = []  # Reset the list
+        start_time = time.time()  # Reset the timer
+        if mean_value == 1.00000 :
+            is_machine_on = False
+            print("Machine is not on")
+        else:
+            is_machine_on = True
+            print("Machine is on")
         
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
