@@ -10,7 +10,7 @@ def save_to_db(elapsed_time_production, elapsed_time_pause, elapsed_time_panne, 
     file_exists = os.path.isfile(csv_file)
     
     # Get the current time for the timestamp
-    current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    current_time = time.strftime("%Y-%m-%d", time.localtime())
     
     # Data to be written to the CSV
     data = [

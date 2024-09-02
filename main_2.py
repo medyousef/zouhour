@@ -35,10 +35,10 @@ def main():
         start_time = time.time()
         if time.time() - start_time >= 10:
             mean_value = sum(detection_values) / len(detection_values)
-            print("Mean value detected: {:.2f}".format(mean_value))
+            print("Mean value detected: {:.5f}".format(mean_value))
             detection_values = []  # Reset the list
             start_time = time.time()  # Reset the timer
-            if mean_value ==1 :
+            if mean_value == 1.00000 :
                 is_machine_on = False
             else:
                 is_machine_on = True
@@ -188,9 +188,9 @@ def main():
 
         # Check if machine is on
         if not is_machine_on and not (states['panne']['active'] or states['pause']['active'] or states['organisation']['active'] or states['reglage']['active'] or states['changement']['active']):
-            print("Machine is not on")
+            print("test")
         else:
-            print("Machine is on")
+            print("test")
 
         time.sleep(1)
 
