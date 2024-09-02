@@ -7,6 +7,7 @@ def initialize_gpio():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     setup_buttons()
+    GPIO.setup(16, GPIO.IN)  # Set GPIO16 as input for vibration detection
 
 def get_elapsed_time(start_time, end_time=None):
     if end_time:
@@ -29,21 +30,18 @@ def main():
 
     while True:
         print("Labo ARRAZI")
-        is_machine_on = False
         vibration_detected = GPIO.input(16)
         detection_values.append(vibration_detected)
-        #if time.time() - start_time >= 1:
-        mean_value = sum(detection_values) / len(detection_values)
-        print("Mean value detected: {:.5f}".format(mean_value))
-        detection_values = []  # Reset the list
-        start_time = time.time()  # Reset the timer
-        if mean_value == 1.00000 :
-            is_machine_on = False
-            print("Machine is not on")
-        else:
-            is_machine_on = True
-            print("Machine is on")
-        
+
+        if time.time() - start_time >= 1:
+            mean_value = sum(detection_values) / len(detection_values)
+            print("Mean value detected: {:.5f}".format(mean_value))
+            detection_values = []  # Reset the list
+            start_time = time.time()  # Reset the timer
+            
+            is_machine_on = mean_value != 1.0
+            print("Machine is on" if is_machine_on else "Machine is not on")
+
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
             states['production']['button_pressed'] = True
@@ -187,13 +185,14 @@ def main():
             seconds = current_time % 60
             print(f"Organisation: {minutes:02d}:{seconds:02d}")
 
-        # Check if machine is on
+        # Check if machine is on and log test
         if not is_machine_on and not (states['panne']['active'] or states['pause']['active'] or states['organisation']['active'] or states['reglage']['active'] or states['changement']['active']):
             print("test")
         else:
             print("test")
 
-        time.sleep(1)
+        # Delay to prevent excessive CPU usage
+        time.sleep(0.1)
 
 if __name__ == '__main__':
     try:
