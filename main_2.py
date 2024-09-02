@@ -26,7 +26,7 @@ def main():
     }
 
     detection_values = []
-    start_time = time.time()
+    start_time_vibration = time.time()
     while True:
         print("Labo ARRAZI")
         is_machine_on = False
@@ -49,12 +49,12 @@ def main():
         vibration_detected = GPIO.input(16)
         detection_values.append(vibration_detected)
 
-        if time.time() - start_time >= 1:
+        if time.time() - start_time_vibration >= 1:
             mean_value = sum(detection_values) / len(detection_values)
             print("Mean value detected: {:.10f}".format(mean_value))
             print("length"+str(len(detection_values)))
             detection_values = []  # Reset the list
-            start_time = time.time()  # Reset the timer
+            start_time_vibration = time.time()  # Reset the timer
         
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
