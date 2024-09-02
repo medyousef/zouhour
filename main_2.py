@@ -30,32 +30,20 @@ def main():
     while True:
         print("Labo ARRAZI")
         is_machine_on = False
-        # vibration_detected = GPIO.input(16)
-        # detection_values.append(vibration_detected)
-        # #if time.time() - start_time >= 1:
-        # print(str(vibration_detected))
-        # mean_value = sum(detection_values) / len(detection_values)
-        # print("length"+str(len(detection_values)))
-        # print("Mean value detected: {:.5f}".format(mean_value))
-        # detection_values = []  # Reset the list
-        # start_time = time.time()  # Reset the timer
-        # if mean_value == 1.00000 :
-        #     is_machine_on = False
-        #     print("Machine is not on")
-        # else:
-        #     is_machine_on = True
-        #     print("Machine is on")
+        current_time = time.time()
+        
+        # Handle vibration detection separately
+        if current_time - start_time_vibration >= 0.1:  # Sampling vibration every 0.1 seconds
+            vibration_detected = GPIO.input(16)
+            detection_values.append(vibration_detected)
 
-        vibration_detected = GPIO.input(16)
-        detection_values.append(vibration_detected)
-
-        if time.time() - start_time_vibration >= 1:
-            mean_value = sum(detection_values) / len(detection_values)
-            print("Mean value detected: {:.10f}".format(mean_value))
-            print("length"+str(len(detection_values)))
-            detection_values = []  # Reset the list
-            start_time_vibration = time.time()  # Reset the timer
-        time.sleep(1)
+            if current_time - start_time_vibration >= 1:  # Calculate mean value every 1 second
+                mean_value = sum(detection_values) / len(detection_values)
+                print("Mean value detected: {:.10f}".format(mean_value))
+                print("Number of samples: " + str(len(detection_values)))
+                detection_values = []  # Reset the list
+                start_time_vibration = time.time()  # Reset the timer
+                
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
             states['production']['button_pressed'] = True
