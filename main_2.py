@@ -40,8 +40,10 @@ def main():
             start_time = time.time()  # Reset the timer
             if mean_value == 1.00000 :
                 is_machine_on = False
+                print("Machine is not on")
             else:
                 is_machine_on = True
+                print("Machine is on")
         
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
