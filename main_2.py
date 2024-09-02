@@ -16,7 +16,6 @@ def get_elapsed_time(start_time, end_time=None):
 
 def main():
     initialize_gpio()
-    detection_values = []
     states = {
         'production': {'button_pin': BUTTON_PRODUCTION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'pause': {'button_pin': BUTTON_PAUSE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
@@ -26,24 +25,36 @@ def main():
         'organisation': {'button_pin': BUTTON_ORGANISATION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0}
     }
 
+    detection_values = []
+    start_time = time.time()
     while True:
         print("Labo ARRAZI")
-        is_machine_on = False
+        #is_machine_on = False
+        # vibration_detected = GPIO.input(16)
+        # detection_values.append(vibration_detected)
+        # #if time.time() - start_time >= 1:
+        # print(str(vibration_detected))
+        # mean_value = sum(detection_values) / len(detection_values)
+        # print("length"+str(len(detection_values)))
+        # print("Mean value detected: {:.5f}".format(mean_value))
+        # detection_values = []  # Reset the list
+        # start_time = time.time()  # Reset the timer
+        # if mean_value == 1.00000 :
+        #     is_machine_on = False
+        #     print("Machine is not on")
+        # else:
+        #     is_machine_on = True
+        #     print("Machine is on")
+
         vibration_detected = GPIO.input(16)
         detection_values.append(vibration_detected)
-        #if time.time() - start_time >= 1:
-        print(str(vibration_detected))
-        mean_value = sum(detection_values) / len(detection_values)
-        print("length"+str(len(detection_values)))
-        print("Mean value detected: {:.5f}".format(mean_value))
-        detection_values = []  # Reset the list
-        start_time = time.time()  # Reset the timer
-        if mean_value == 1.00000 :
-            is_machine_on = False
-            print("Machine is not on")
-        else:
-            is_machine_on = True
-            print("Machine is on")
+
+        if time.time() - start_time >= 1:
+            mean_value = sum(detection_values) / len(detection_values)
+            print("Mean value detected: {:.10f}".format(mean_value))
+            print("length"+str(len(detection_values)))
+            detection_values = []  # Reset the list
+            start_time = time.time()  # Reset the timer
         
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
