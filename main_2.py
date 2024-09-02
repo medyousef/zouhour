@@ -41,7 +41,7 @@ def main():
             
             is_machine_on = mean_value != 1.0
             print("Machine is on" if is_machine_on else "Machine is not on")
-
+        
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
             states['production']['button_pressed'] = True
@@ -185,11 +185,11 @@ def main():
             seconds = current_time % 60
             print(f"Organisation: {minutes:02d}:{seconds:02d}")
 
-        # Check if machine is on and log test
-        # if not is_machine_on and not (states['panne']['active'] or states['pause']['active'] or states['organisation']['active'] or states['reglage']['active'] or states['changement']['active']):
-        #     print("test")
-        # else:
-        #     print("test")
+        # Check if machine is on
+        if not is_machine_on and not (states['panne']['active'] or states['pause']['active'] or states['organisation']['active'] or states['reglage']['active'] or states['changement']['active']):
+            print("test")
+        else:
+            print("test")
 
         # Delay to prevent excessive CPU usage
         time.sleep(0.1)
