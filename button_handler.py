@@ -13,7 +13,7 @@ def setup_buttons():
     GPIO.setup(BUTTON_PRODUCTION_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button input for production
     GPIO.setup(BUTTON_PAUSE_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button input for pause
     GPIO.setup(BUTTON_PANNE_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button input for panne
-    GPIO.setup(BUTTON_CHANGEMENT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Button input for changement
+    GPIO.setup(BUTTON_CHANGEMENT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button input for changement
     GPIO.setup(BUTTON_REGLAGE_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button input for reglage
     GPIO.setup(BUTTON_ORGANISATION_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button input for organisation
 

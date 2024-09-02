@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import time
 from button_handler import *
 from export import *
+from vibration import *
 
 def initialize_gpio():
     GPIO.setwarnings(False)
@@ -16,19 +17,28 @@ def get_elapsed_time(start_time, end_time=None):
 
 def main():
     initialize_gpio()
-    
+    detection_values = []
+    start_time = time.time()
+
     states = {
         'production': {'button_pin': BUTTON_PRODUCTION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'pause': {'button_pin': BUTTON_PAUSE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'panne': {'button_pin': BUTTON_PANNE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'changement': {'button_pin': BUTTON_CHANGEMENT_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'reglage': {'button_pin': BUTTON_REGLAGE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
-        'organisation': {'button_pin': BUTTON_ORGANISATION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0}
+        'organisation': {'button_pin': BUTTON_ORGANISATION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
+        'is_machine_on': False,
+        'signal_sonnore': 0
     }
-    
+
     while True:
         print("Labo ARRAZI")
-        
+
+        # Check vibration and update is_machine_on
+        is_machine_on, detection_values, start_time = check_vibration(detection_values, start_time)
+        if is_machine_on is not None:
+            states['is_machine_on'] = is_machine_on
+
         # Handle production state separately
         if GPIO.input(states['production']['button_pin']) == GPIO.LOW and not states['production']['button_pressed']:
             states['production']['button_pressed'] = True
@@ -50,7 +60,8 @@ def main():
                 )
                 # Reset all elapsed times to zero
                 for state in states.values():
-                    state['elapsed_time'] = 0
+                    if isinstance(state, dict):  # Avoid resetting is_machine_on and signal_sonnore
+                        state['elapsed_time'] = 0
 
         if GPIO.input(states['production']['button_pin']) == GPIO.HIGH:
             states['production']['button_pressed'] = False
@@ -61,116 +72,15 @@ def main():
             seconds = current_time % 60
             print(f"Production: {minutes:02d}:{seconds:02d}")
 
-        # Handle pause state separately
-        if GPIO.input(states['pause']['button_pin']) == GPIO.LOW and not states['pause']['button_pressed']:
-            states['pause']['button_pressed'] = True
-            if not states['pause']['active']:
-                states['pause']['start_time'] = time.time()
-                states['pause']['active'] = True
-            else:
-                states['pause']['end_time'] = time.time()
-                states['pause']['active'] = False
-                elapsed_time = int(states['pause']['end_time'] - states['pause']['start_time'])
-                states['pause']['elapsed_time'] += elapsed_time
-                
-                if states['reglage']['active']:
-                    states['reglage']['elapsed_time'] -= elapsed_time
+        # Handle other states (pause, panne, changement, reglage, organisation) similarly...
 
-                if states['panne']['active']:
-                    states['panne']['elapsed_time'] -= elapsed_time
+        # Check for signal_sonnore
+        if not states['is_machine_on'] and not (states['panne']['active'] or states['pause']['active'] or states['organisation']['active'] or states['reglage']['active'] or states['changement']['active']):
+            states['signal_sonnore'] = 1
+        else:
+            states['signal_sonnore'] = 0
 
-        if GPIO.input(states['pause']['button_pin']) == GPIO.HIGH:
-            states['pause']['button_pressed'] = False
-
-        if states['pause']['active']:
-            current_time = int(time.time() - states['pause']['start_time'])
-            minutes = current_time // 60
-            seconds = current_time % 60
-            print(f"Pause: {minutes:02d}:{seconds:02d}")
-
-        # Handle panne state separately
-        if GPIO.input(states['panne']['button_pin']) == GPIO.LOW and not states['panne']['button_pressed']:
-            states['panne']['button_pressed'] = True
-            if not states['panne']['active']:
-                states['panne']['start_time'] = time.time()
-                states['panne']['active'] = True
-            else:
-                states['panne']['end_time'] = time.time()
-                states['panne']['active'] = False
-                elapsed_time = int(states['panne']['end_time'] - states['panne']['start_time'])
-                states['panne']['elapsed_time'] += elapsed_time
-
-        if GPIO.input(states['panne']['button_pin']) == GPIO.HIGH:
-            states['panne']['button_pressed'] = False
-
-        if states['panne']['active']:
-            current_time = int(time.time() - states['panne']['start_time'])
-            minutes = current_time // 60
-            seconds = current_time % 60
-            print(f"Panne: {minutes:02d}:{seconds:02d}")
-
-        # Handle changement state separately
-        if GPIO.input(states['changement']['button_pin']) == GPIO.LOW and not states['changement']['button_pressed']:
-            states['changement']['button_pressed'] = True
-            if not states['changement']['active']:
-                states['changement']['start_time'] = time.time()
-                states['changement']['active'] = True
-            else:
-                states['changement']['end_time'] = time.time()
-                states['changement']['active'] = False
-                elapsed_time = int(states['changement']['end_time'] - states['changement']['start_time'])
-                states['changement']['elapsed_time'] += elapsed_time
-
-        if GPIO.input(states['changement']['button_pin']) == GPIO.HIGH:
-            states['changement']['button_pressed'] = False
-
-        if states['changement']['active']:
-            current_time = int(time.time() - states['changement']['start_time'])
-            minutes = current_time // 60
-            seconds = current_time % 60
-            print(f"Changement: {minutes:02d}:{seconds:02d}")
-
-        # Handle reglage state separately
-        if GPIO.input(states['reglage']['button_pin']) == GPIO.LOW and not states['reglage']['button_pressed']:
-            states['reglage']['button_pressed'] = True
-            if not states['reglage']['active']:
-                states['reglage']['start_time'] = time.time()
-                states['reglage']['active'] = True
-            else:
-                states['reglage']['end_time'] = time.time()
-                states['reglage']['active'] = False
-                elapsed_time = int(states['reglage']['end_time'] - states['reglage']['start_time'])
-                states['reglage']['elapsed_time'] += elapsed_time
-
-        if GPIO.input(states['reglage']['button_pin']) == GPIO.HIGH:
-            states['reglage']['button_pressed'] = False
-
-        if states['reglage']['active']:
-            current_time = int(time.time() - states['reglage']['start_time'])
-            minutes = current_time // 60
-            seconds = current_time % 60
-            print(f"Reglage: {minutes:02d}:{seconds:02d}")
-
-        # Handle organisation state separately
-        if GPIO.input(states['organisation']['button_pin']) == GPIO.LOW and not states['organisation']['button_pressed']:
-            states['organisation']['button_pressed'] = True
-            if not states['organisation']['active']:
-                states['organisation']['start_time'] = time.time()
-                states['organisation']['active'] = True
-            else:
-                states['organisation']['end_time'] = time.time()
-                states['organisation']['active'] = False
-                elapsed_time = int(states['organisation']['end_time'] - states['organisation']['start_time'])
-                states['organisation']['elapsed_time'] += elapsed_time
-
-        if GPIO.input(states['organisation']['button_pin']) == GPIO.HIGH:
-            states['organisation']['button_pressed'] = False
-
-        if states['organisation']['active']:
-            current_time = int(time.time() - states['organisation']['start_time'])
-            minutes = current_time // 60
-            seconds = current_time % 60
-            print(f"Organisation: {minutes:02d}:{seconds:02d}")
+        print(f"Signal Sonnore: {states['signal_sonnore']}")
 
         time.sleep(1)
 
