@@ -16,7 +16,8 @@ def get_elapsed_time(start_time, end_time=None):
 
 def main():
     initialize_gpio()
-    
+    detection_values = []
+    start_time = time.time()
     states = {
         'production': {'button_pin': BUTTON_PRODUCTION_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
         'pause': {'button_pin': BUTTON_PAUSE_PIN, 'active': False, 'button_pressed': False, 'start_time': None, 'end_time': None, 'elapsed_time': 0},
