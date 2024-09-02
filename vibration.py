@@ -15,7 +15,7 @@ try:
 
         if time.time() - start_time >= 1:
             mean_value = sum(detection_values) / len(detection_values)
-            print("Mean value detected: {:.2f}".format(mean_value))
+            print("Mean value detected: {:.5f}".format(mean_value))
             detection_values = []  # Reset the list
             start_time = time.time()  # Reset the timer
 
