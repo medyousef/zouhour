@@ -33,7 +33,7 @@ def main():
         vibration_detected = GPIO.input(16)
         detection_values.append(vibration_detected)
         #if time.time() - start_time >= 1:
-        
+        print(str(vibration_detected))
         mean_value = sum(detection_values) / len(detection_values)
         print("Mean value detected: {:.5f}".format(mean_value))
         detection_values = []  # Reset the list
