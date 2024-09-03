@@ -70,6 +70,7 @@ def main():
     start_time_check = time.time()
     last_state = None 
     mean_value = 1
+    pwm = None  # Initialize PWM as None
     
     while True:
         current_time = time.time()
@@ -158,11 +159,10 @@ def main():
 
             update_display(states, last_state)
             start_time_buttons = current_time  # Reset the button check timer
+        
+        # Check every 10 seconds for no vibration and inactive stop times
         if current_time - start_time_check >= 10:
-            if mean_value == 1.0000000000:
-                no_vibration = True  # No vibration detected in the last period
-            else:
-                no_vibration = False
+            no_vibration = mean_value == 1.0000000000  # Check for no vibration
             stop_times_inactive = not any([
                 states['panne']['active'],
                 states['pause']['active'],
@@ -172,8 +172,14 @@ def main():
             ])
             
             if no_vibration and stop_times_inactive and states['production']['active']:
-                pwm = GPIO.PWM(buzzer_pin, 3000)  # Initialize PWM with a fixed frequency
-                pwm.start(100)
+                if pwm is None:  # Initialize PWM only if it hasn't been created
+                    pwm = GPIO.PWM(buzzer_pin, 3000)  # Initialize PWM with a fixed frequency
+                pwm.start(100)  # Start PWM with 100% duty cycle
+            else:
+                if pwm is not None:  # Stop PWM if it was previously started
+                    pwm.stop()
+                    pwm = None
+
             print("Il n'y a pas de vibration, aucun des temps d'arrêts (panne, pause, organisation, réglage, changement) n'est actif, et la production est active.")
             start_time_check = current_time  # Reset the check timer
 
