@@ -47,7 +47,7 @@ def update_display(states, last_state):
     # Fourth Line: Last Pressed State
     if last_state:
         last_time = states[last_state]['elapsed_time']
-        last_time_str = f"{last_state.capitalize()} {last_time//60:02d}:{last_time%60:02d}"
+        last_time_str = f" {last_state.capitalize()} {last_time//60:02d}:{last_time%60:02d}"
         lcd_string(last_time_str, LCD_LINE_4)
     else:
         lcd_string(" " * LCD_WIDTH, LCD_LINE_4)  # Clear line if no last state
@@ -156,6 +156,20 @@ def main():
 
             update_display(states, last_state)
             start_time_buttons = current_time  # Reset the button check timer
+        if current_time - start_time_check >= 10:
+            no_vibration = not any(detection_values)  # No vibration detected in the last period
+            stop_times_active = any([
+                states['panne']['active'],
+                states['pause']['active'],
+                states['organisation']['active'],
+                states['reglage']['active'],
+                states['changement']['active']
+            ])
+            
+            if no_vibration and stop_times_active:
+                print("Il n'y a pas de vibration et les temps d'arrêts (panne, pause, organisation, réglage, changement) sont actifs.")
+            
+            start_time_check = current_time  # Reset the check timer
 
 if __name__ == '__main__':
     try:
