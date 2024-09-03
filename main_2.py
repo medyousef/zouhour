@@ -86,7 +86,7 @@ def main():
                 start_time_vibration = time.time()  # Reset the timer
 
         # Handle button states separately
-        if current_time - start_time_buttons >= 0.1:  # Check button states every second
+        if current_time - start_time_buttons >= 1:  # Check button states every second
             for state_name, state in states.items():
                 button_pressed = GPIO.input(state['button_pin']) == GPIO.LOW
 
