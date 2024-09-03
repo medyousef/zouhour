@@ -67,6 +67,7 @@ def main():
     detection_values = []
     start_time_vibration = time.time()
     start_time_buttons = time.time()
+    start_time_check = time.time()
     last_state = None
     
     while True:
