@@ -85,7 +85,7 @@ def main():
                 start_time_vibration = time.time()  # Reset the timer
 
         # Handle button states separately
-        if current_time - start_time_buttons >= 1:  # Check button states every second
+        if current_time - start_time_buttons >= 0.1:  # Check button states every second
             for state_name, state in states.items():
                 button_pressed = GPIO.input(state['button_pin']) == GPIO.LOW
 
@@ -167,6 +167,8 @@ def main():
             ])
             
             if no_vibration and stop_times_active:
+                pwm = GPIO.PWM(buzzer_pin, 3000)  # Initialize PWM with a fixed frequency
+                pwm.start(100)
                 print("Il n'y a pas de vibration et les temps d'arrêts (panne, pause, organisation, réglage, changement) sont actifs.")
             
             start_time_check = current_time  # Reset the check timer
