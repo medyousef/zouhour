@@ -159,7 +159,7 @@ def main():
             start_time_buttons = current_time  # Reset the button check timer
         if current_time - start_time_check >= 10:
             no_vibration = not any(detection_values)  # No vibration detected in the last period
-            stop_times_active = any([
+            stop_times_inactive = all([
                 not states['panne']['active'],
                 not states['pause']['active'],
                 not states['organisation']['active'],
@@ -167,11 +167,11 @@ def main():
                 not states['changement']['active']
             ])
             
-            if no_vibration and stop_times_active and states['production']['active']:
+            if no_vibration and stop_times_inactive and states['production']['active']:
                 pwm = GPIO.PWM(buzzer_pin, 3000)  # Initialize PWM with a fixed frequency
                 pwm.start(100)
-                print("Il n'y a pas de vibration et les temps d'arrêts (panne, pause, organisation, réglage, changement) ne sont actifs.")
-            
+                print("Il n'y a pas de vibration et les temps d'arrêts (panne, pause, organisation, réglage, changement) ne sont pas actifs, mais la production est active.")
+
             start_time_check = current_time  # Reset the check timer
 
 if __name__ == '__main__':
