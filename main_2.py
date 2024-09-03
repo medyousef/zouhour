@@ -47,7 +47,7 @@ def update_display(states, last_state):
     # Fourth Line: Last Pressed State
     if last_state:
         last_time = states[last_state]['elapsed_time']
-        last_time_str = f"Last: {last_state.capitalize()} {last_time//60:02d}:{last_time%60:02d}"
+        last_time_str = f"{last_state.capitalize()} {last_time//60:02d}:{last_time%60:02d}"
         lcd_string(last_time_str, LCD_LINE_4)
     else:
         lcd_string(" " * LCD_WIDTH, LCD_LINE_4)  # Clear line if no last state
