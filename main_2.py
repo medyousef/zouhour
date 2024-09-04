@@ -45,7 +45,7 @@ def update_display(states, last_state):
     lcd_string(pause_time_str, LCD_LINE_3)
 
     # Fourth Line: Last Pressed State
-    if last_state and not states['production']:
+    if last_state:
         last_time = states[last_state]['elapsed_time']
         last_time_str = f"{last_state.capitalize()} {last_time//60:02d}:{last_time%60:02d}"
         lcd_string(last_time_str, LCD_LINE_4)
@@ -103,7 +103,6 @@ def main():
                         elapsed_time = int(state['end_time'] - state['start_time'])
                         state['elapsed_time'] += elapsed_time
 
-                        last_state = state_name
                         if state_name == 'production':
                             save_to_db(
                                 states['production']['elapsed_time'],
@@ -116,6 +115,8 @@ def main():
                             # Reset all elapsed times to zero
                             for s in states.values():
                                 s['elapsed_time'] = 0
+
+                        last_state = state_name
 
                 if not button_pressed:
                     state['button_pressed'] = False
