@@ -173,7 +173,7 @@ def main():
             
             if no_vibration and stop_times_inactive and states['production']['active']:
                 if pwm is None:  # Initialize PWM only if it hasn't been created
-                    pwm = GPIO.PWM(buzzer_pin, 3000)  # Initialize PWM with a fixed frequency
+                    pwm = GPIO.PWM(buzzer_pin, 1000)  # Initialize PWM with a fixed frequency
                 pwm.start(100)  # Start PWM with 100% duty cycle
                 print("Il n'y a pas de vibration, aucun des temps d'arrêts (panne, pause, organisation, réglage, changement) n'est actif, et la production est active.")
             else:
