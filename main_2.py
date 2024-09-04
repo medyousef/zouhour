@@ -127,17 +127,18 @@ def main():
                 seconds = production_elapsed % 60
                 print(f"Production: {minutes:02d}:{seconds:02d}")
 
-            if states['pause']['active']:
-                pause_elapsed = get_elapsed_time(states['pause']['start_time'])
-                minutes = pause_elapsed // 60
-                seconds = pause_elapsed % 60
-                print(f"Pause: {minutes:02d}:{seconds:02d}")
-
+            if not states['pause']['active'] and states['pause']['end_time']:
+                pause_elapsed = get_elapsed_time(states['pause']['start_time'], states['pause']['end_time'])
+                
                 if states['reglage']['active']:
                     states['reglage']['elapsed_time'] -= pause_elapsed
 
                 if states['panne']['active']:
                     states['panne']['elapsed_time'] -= pause_elapsed
+
+                # Reset pause end_time after deduction to avoid repeated subtraction
+                states['pause']['end_time'] = None
+
 
             if states['panne']['active']:
                 panne_elapsed = get_elapsed_time(states['panne']['start_time'])
