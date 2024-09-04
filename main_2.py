@@ -18,11 +18,17 @@ def get_elapsed_time(start_time, end_time=None):
 def update_display(states, last_state):
     # First Line: Production Time
     if states['production']['active']:
-        production_time = get_elapsed_time(states['production']['start_time'])
+        production_elapsed = get_elapsed_time(states['production']['start_time'])
+        minutes = production_elapsed // 60
+        seconds = production_elapsed % 60
+        print(f"Production: {minutes:02d}:{seconds:02d}")
+        # Update the display with the production time
+        production_time_str = f"Prod: {minutes:02d}:{seconds:02d}"
+        lcd_string(production_time_str, LCD_LINE_1)
     else:
-        production_time = states['production']['elapsed_time']
-    production_time_str = f"Prod: {production_time//60:02d}:{production_time%60:02d}"
-    lcd_string(production_time_str, LCD_LINE_1)
+        # If production is not active, use the stored elapsed time
+        production_time_str = f"Prod: {states['production']['elapsed_time']//60:02d}:{states['production']['elapsed_time']%60:02d}"
+        lcd_string(production_time_str, LCD_LINE_1)
 
     # Second Line: Other Active Time
     active_state = None
