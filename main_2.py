@@ -18,17 +18,11 @@ def get_elapsed_time(start_time, end_time=None):
 def update_display(states, last_state):
     # First Line: Production Time
     if states['production']['active']:
-        production_elapsed = get_elapsed_time(states['production']['start_time'])
-        minutes = production_elapsed // 60
-        seconds = production_elapsed % 60
-        print(f"Production: {minutes:02d}:{seconds:02d}")
-        # Update the display with the production time
-        production_time_str = f"Prod: {minutes:02d}:{seconds:02d}"
-        lcd_string(production_time_str, LCD_LINE_1)
+        production_time = get_elapsed_time(states['production']['start_time'])
     else:
-        # If production is not active, use the stored elapsed time
-        production_time_str = f"Prod: {states['production']['elapsed_time']//60:02d}:{states['production']['elapsed_time']%60:02d}"
-        lcd_string(production_time_str, LCD_LINE_1)
+        production_time = states['production']['elapsed_time']
+    production_time_str = f"Prod: {production_time//60:02d}:{production_time%60:02d}"
+    lcd_string(production_time_str, LCD_LINE_1)
 
     # Second Line: Other Active Time
     active_state = None
@@ -109,6 +103,7 @@ def main():
                         elapsed_time = int(state['end_time'] - state['start_time'])
                         state['elapsed_time'] += elapsed_time
 
+                        last_state = state_name
                         if state_name == 'production':
                             save_to_db(
                                 states['production']['elapsed_time'],
@@ -121,8 +116,6 @@ def main():
                             # Reset all elapsed times to zero
                             for s in states.values():
                                 s['elapsed_time'] = 0
-
-                        last_state = state_name
 
                 if not button_pressed:
                     state['button_pressed'] = False
